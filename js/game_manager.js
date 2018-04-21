@@ -37,15 +37,33 @@ GameManager.prototype.isGameTerminated = function () {
 
 // Set up the game
 GameManager.prototype.setup = function () {
-  this.grid        = new Grid(this.size);
+  var gridStr = this.scoreManager.getState();
+  var grid = JSON.parse(gridStr);
+  this.grid = new Grid(this.size);
+
+  if (grid) {
+    grid.cells.forEach(function(row) {
+      row.forEach(function(cell) { 
+        if (cell === null) return;
+        var tile = new Tile({ x: cell.x, y: cell.y }, cell.value);
+        tile.previousPosition = cell.previousPosition;
+        tile.mergedFrom = cell.mergedFrom;
+  
+        this.grid.insertTile(tile);
+      }, this);
+
+    }, this);
+  }
 
   this.score       = 0;
   this.over        = false;
   this.won         = false;
   this.keepPlaying = false;
 
-  // Add the initial tiles
-  this.addStartTiles();
+  if (!grid) {
+    // Add the initial tiles
+    this.addStartTiles();
+  }
 
   // Update the actuator
   this.actuate();
@@ -167,10 +185,12 @@ GameManager.prototype.move = function (direction) {
 
     if (!this.movesAvailable()) {
       this.over = true; // Game over!
+      this.scoreManager.setState(false);
     }
 
     this.actuate();
   }
+  this.scoreManager.setState(this.grid);
 };
 
 // Get the vector representing the chosen direction
