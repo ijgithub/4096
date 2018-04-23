@@ -17,6 +17,7 @@ function GameManager(size, targetTile, tilesToAdd, InputManager, Actuator, Score
 
 // Restart the game
 GameManager.prototype.restart = function () {
+  this.scoreManager.setState(false);
   this.actuator.continue();
   this.setup();
 };
