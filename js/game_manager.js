@@ -60,7 +60,12 @@ GameManager.prototype.setup = function () {
   this.over        = false;
   this.won         = false;
   this.keepPlaying = false;
-
+  
+  if (gridStr && gridStr.indexOf('4096') > -1) {
+	this.won = true;
+	this.keepPlaying = true;
+  }
+  
   if (!grid) {
     // Add the initial tiles
     this.addStartTiles();
