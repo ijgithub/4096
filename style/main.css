@@ -143,6 +143,15 @@ hr {
   100% {
     opacity: 1; } }
 
+.intro-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-intro {
+
+}
+
 .game-container {
   margin-top: 40px;
   position: relative;
@@ -521,7 +530,14 @@ hr {
   animation-fill-mode: backwards; }
 
 .game-intro {
-  margin-bottom: 0; }
+  margin-bottom: 0; 
+  flex: 1;
+  flex-grow: 1;
+}
+
+.undo-button {
+  display: block;
+}
 
 .game-explanation {
   margin-top: 50px; }

@@ -3,6 +3,7 @@ function GameManager(size, targetTile, tilesToAdd, InputManager, Actuator, Score
   this.inputManager = new InputManager;
   this.scoreManager = new ScoreManager;
   this.actuator     = new Actuator;
+  this.undoBuffer   = [];
 
   this.startTiles   = tilesToAdd;
   this.targetTile = targetTile;
@@ -11,6 +12,7 @@ function GameManager(size, targetTile, tilesToAdd, InputManager, Actuator, Score
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("undo", this.undo.bind(this));
 
   this.setup();
 }
@@ -62,8 +64,8 @@ GameManager.prototype.setup = function () {
   this.keepPlaying = false;
   
   if (gridStr && gridStr.indexOf('4096') > -1) {
-	this.won = true;
-	this.keepPlaying = true;
+    this.won = true;
+    this.keepPlaying();
   }
   
   if (!grid) {
@@ -135,6 +137,12 @@ GameManager.prototype.move = function (direction) {
 
   if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
+  var gridClone = JSON.parse(JSON.stringify(this.grid));
+  if (this.undoBuffer.length === 10) {
+    this.undoBuffer.shift();
+  }
+  this.undoBuffer.push(gridClone);
+
   var cell, tile;
 
   var vector     = this.getVector(direction);
@@ -197,6 +205,26 @@ GameManager.prototype.move = function (direction) {
     this.actuate();
   }
   this.scoreManager.setState(this.grid);
+};
+
+GameManager.prototype.undo = function () {
+  if (this.undoBuffer.length === 0) return;
+  this.grid = new Grid(this.size);
+  var lastGrid = this.undoBuffer.pop();
+
+  lastGrid.cells.forEach(function(row) {
+    row.forEach(function(cell) { 
+      if (cell === null) return;
+      var tile = new Tile({ x: cell.x, y: cell.y }, cell.value);
+      tile.previousPosition = cell.previousPosition;
+      tile.mergedFrom = cell.mergedFrom;
+
+      this.grid.insertTile(tile);
+    }, this);
+
+  }, this);
+
+  this.actuate();
 };
 
 // Get the vector representing the chosen direction
