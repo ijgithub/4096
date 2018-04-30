@@ -65,7 +65,8 @@ GameManager.prototype.setup = function () {
   
   if (gridStr && gridStr.indexOf('4096') > -1) {
     this.won = true;
-    this.keepPlaying();
+    this.keepPlaying = true;
+    this.actuator.continue();
   }
   
   if (!grid) {
