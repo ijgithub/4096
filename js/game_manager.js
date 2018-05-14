@@ -44,10 +44,15 @@ GameManager.prototype.setup = function () {
   var grid = JSON.parse(gridStr);
   this.grid = new Grid(this.size);
 
+  var maxValue = 0;
+
   if (grid) {
     grid.cells.forEach(function(row) {
       row.forEach(function(cell) { 
         if (cell === null) return;
+
+        maxValue = maxValue < cell.value ? cell.value : maxValue;
+
         var tile = new Tile({ x: cell.x, y: cell.y }, cell.value);
         tile.previousPosition = cell.previousPosition;
         tile.mergedFrom = cell.mergedFrom;
@@ -58,12 +63,12 @@ GameManager.prototype.setup = function () {
     }, this);
   }
 
-  this.score       = 0;
+  this.score       = parseInt(this.scoreManager.getCurrentScore());
   this.over        = false;
   this.won         = false;
   this.keepPlaying = false;
   
-  if (gridStr && gridStr.indexOf('4096') > -1) {
+  if (maxValue >= 4096) {
     this.won = true;
     this.keepPlaying = true;
     this.actuator.continue();
@@ -112,6 +117,7 @@ GameManager.prototype.actuate = function () {
     terminated: this.isGameTerminated()
   });
 
+  this.scoreManager.setCurrentScore(this.score);
 };
 
 // Save all tile positions and remove merger info
