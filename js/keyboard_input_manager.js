@@ -65,6 +65,12 @@ KeyboardInputManager.prototype.listen = function () {
   undo.addEventListener("click", this.undo.bind(this));
   undo.addEventListener("touchend", this.undo.bind(this));
 
+  var toggleAi = document.getElementById('toggleAi');
+  toggleAi.addEventListener('click', this.toggleAi.bind(this));
+
+  var movesPerSecond = document.getElementById('movesPerSecond');
+  movesPerSecond.addEventListener('change', this.changeMovesPerSecond.bind(this));
+
   // Listen to swipe events
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
@@ -111,4 +117,25 @@ KeyboardInputManager.prototype.undo = function (event) {
   event.preventDefault();
   this.emit("undo");
 };
+
+KeyboardInputManager.prototype.toggleAi = function(event) {
+  event.preventDefault();
+  var target = event.target;
+  if (target.textContent === "Start") {
+    target.textContent = "Stop";
+    this.emit("start-ai");
+
+  } else {
+    target.textContent = "Start";
+    this.emit("stop-ai");
+  }
+}
+
+KeyboardInputManager.prototype.changeMovesPerSecond = function(event) {
+  event.preventDefault();
+  var value = parseInt(event.target.value);
+  value = value < 1 ? 1 : value;
+  
+  this.emit("update-mps", value);
+}
 

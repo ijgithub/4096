@@ -30,10 +30,6 @@ html, body {
   font-size: 18px;
 }
 
-body {
-  margin: 80px 0;
-}
-
 .heading:after {
   content: "";
   display: block;
@@ -446,9 +442,22 @@ hr {
   @include animation-fill-mode(backwards);
 }
 
-.game-intro {
-  margin-bottom: 0;
+.intro-container {
+  display: flex;
+  flex-direction: row;
+
+  & .game-intro {
+    flex: 1;
+    flex-grow: 1;
+    margin-bottom: 0;
+  }
+
+  & .undo-button {
+    margin: 0 4px;
+    padding: 4px;
+  }
 }
+
 
 .game-explanation {
   margin-top: 50px;
@@ -513,5 +522,28 @@ hr {
     .lower {
       margin-top: 30px !important;
     }
+  }
+}
+
+.ai-controls {
+  border:none;
+
+  & .start-button {
+    margin: 0 4px;
+    padding: 4px;
+  }
+
+  & .horizontal-layout {
+    display: flex;
+    flex-direction: row;
+  }
+
+  & .block {
+    display: block;
+  }
+
+  & .flex {
+    flex: 1;
+    flex-grow: 1;
   }
 }

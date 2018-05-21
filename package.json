@@ -1,0 +1,26 @@
+{
+  "name": "4096",
+  "version": "1.0.0",
+  "description": "Mah awesome fork of 4096",
+  "main": "index.js",
+  "scripts": {
+    "build-sass": "node-sass style/main.scss style/main.css",
+    "test": "test index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ijgithub/4096.git"
+  },
+  "keywords": [
+    "4096"
+  ],
+  "author": "Ivan Jovanovic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ijgithub/4096/issues"
+  },
+  "homepage": "https://github.com/ijgithub/4096#readme",
+  "devDependencies": {
+    "node-sass": "^4.9.0"
+  }
+}
