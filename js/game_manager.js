@@ -40,14 +40,14 @@ GameManager.prototype.isGameTerminated = function () {
 
 // Set up the game
 GameManager.prototype.setup = function () {
-  var gridStr = this.scoreManager.getState();
-  var grid = JSON.parse(gridStr);
+  var lastStateJsonStr = this.scoreManager.getState();
+  var lastState = JSON.parse(lastStateJsonStr);
   this.grid = new Grid(this.size);
 
   var maxValue = 0;
 
-  if (grid) {
-    grid.cells.forEach(function(row) {
+  if (lastState.grid) {
+    lastState.grid.cells.forEach(function(row) {
       row.forEach(function(cell) { 
         if (cell === null) return;
 
@@ -63,10 +63,11 @@ GameManager.prototype.setup = function () {
     }, this);
   }
 
-  this.score       = parseInt(this.scoreManager.getCurrentScore());
+  this.score       = lastState.currentScore || 0;
   this.over        = false;
   this.won         = false;
   this.keepPlaying = false;
+  this.undoBuffer  = lastState.undoBuffer || [];
   
   if (maxValue >= 4096) {
     this.won = true;
@@ -74,7 +75,7 @@ GameManager.prototype.setup = function () {
     this.actuator.continue();
   }
   
-  if (!grid) {
+  if (!lastState.grid) {
     // Add the initial tiles
     this.addStartTiles();
   }
@@ -116,8 +117,6 @@ GameManager.prototype.actuate = function () {
     bestScore:  this.scoreManager.get(),
     terminated: this.isGameTerminated()
   });
-
-  this.scoreManager.setCurrentScore(this.score);
 };
 
 // Save all tile positions and remove merger info
@@ -148,7 +147,10 @@ GameManager.prototype.move = function (direction) {
   if (this.undoBuffer.length === 10) {
     this.undoBuffer.shift();
   }
-  this.undoBuffer.push(gridClone);
+  this.undoBuffer.push({
+    score: this.score,
+    grid: gridClone
+  });
 
   var cell, tile;
 
@@ -211,15 +213,15 @@ GameManager.prototype.move = function (direction) {
 
     this.actuate();
   }
-  this.scoreManager.setState(this.grid);
+  this.saveGameState();
 };
 
 GameManager.prototype.undo = function () {
   if (this.undoBuffer.length === 0) return;
   this.grid = new Grid(this.size);
-  var lastGrid = this.undoBuffer.pop();
+  var lastState = this.undoBuffer.pop();
 
-  lastGrid.cells.forEach(function(row) {
+  lastState.grid.cells.forEach(function(row) {
     row.forEach(function(cell) { 
       if (cell === null) return;
       var tile = new Tile({ x: cell.x, y: cell.y }, cell.value);
@@ -231,7 +233,31 @@ GameManager.prototype.undo = function () {
 
   }, this);
 
+  this.score = lastState.score;
+
   this.actuate();
+  
+  // save game state to store undo buffer
+  this.saveGameState();
+};
+
+GameManager.prototype.saveGameState = function() {
+  var state = {
+    currentScore: this.score,
+    grid: this.grid,
+    undoBuffer: this.undoBuffer
+  };
+
+  this.scoreManager.setState(state);
+};
+
+GameManager.prototype.restoreGameState = function() {
+  var stateJsonStr = this.scoreManager.getState();
+  var state = JSON.parse(stateJsonStr);
+
+
+
+  this.scoreManager.setState(state);
 };
 
 // Get the vector representing the chosen direction
