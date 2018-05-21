@@ -20,8 +20,7 @@ window.fakeStorage = {
 
 function LocalScoreManager() {
   this.key     = "4096bestScore";
-  this.currentScore         = "4096currentScore";
-  this.currentBoardState    = "4096currentBoardState";
+  this.gameState         = "4096gameState";
 
   var supported = this.localStorageSupported();
   this.storage = supported ? window.localStorage : window.fakeStorage;
@@ -49,17 +48,9 @@ LocalScoreManager.prototype.set = function (score) {
 };
 
 LocalScoreManager.prototype.getState = function () {
-  return this.storage.getItem(this.currentBoardState) || false;
+  return this.storage.getItem(this.gameState) || false;
 };
 
 LocalScoreManager.prototype.setState = function (state) {
-  this.storage.setItem(this.currentBoardState, JSON.stringify(state));
+  this.storage.setItem(this.gameState, JSON.stringify(state));
 };
-
-LocalScoreManager.prototype.getCurrentScore = function() {
-  return this.storage.getItem(this.currentScore) || 0;
-}
-
-LocalScoreManager.prototype.setCurrentScore = function(score) {
-  this.storage.setItem(this.currentScore, score);
-}
