@@ -534,6 +534,9 @@ hr {
     flex: 1;
     flex-grow: 1;
     margin-bottom: 0; }
+  .intro-container .button {
+    margin: 0 4px;
+    padding: 4px; }
   .intro-container .undo-button {
     margin: 0 4px;
     padding: 4px; }

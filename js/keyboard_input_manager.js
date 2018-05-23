@@ -71,6 +71,9 @@ KeyboardInputManager.prototype.listen = function () {
   var movesPerSecond = document.getElementById('movesPerSecond');
   movesPerSecond.addEventListener('change', this.changeMovesPerSecond.bind(this));
 
+  var newGameBtn = document.getElementById('newGameBtn');
+  newGameBtn.addEventListener('click', this.startNewGame.bind(this));
+  
   // Listen to swipe events
   var touchStartClientX, touchStartClientY;
   var gameContainer = document.getElementsByClassName("game-container")[0];
@@ -139,3 +142,7 @@ KeyboardInputManager.prototype.changeMovesPerSecond = function(event) {
   this.emit("update-mps", value);
 }
 
+KeyboardInputManager.prototype.startNewGame = function(event) {
+  event.preventDefault();
+  this.emit("start-new-game");
+}

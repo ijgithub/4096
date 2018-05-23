@@ -13,6 +13,7 @@ function GameManager(size, targetTile, tilesToAdd, inputManager, Actuator, Score
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
   this.inputManager.on("undo", this.undo.bind(this));
+  this.inputManager.on('start-new-game', this.restart.bind(this));
 
   this.setup();
 
